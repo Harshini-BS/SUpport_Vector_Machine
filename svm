@@ -1,0 +1,103 @@
+
+# Importing libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+
+# Creating a dataset (StudyHours vs SleepHours -> Result)
+data = {
+    'StudyHours': [2, 4, 6, 8, 10, 12, 14, 3],
+    'SleepHours': [9, 8, 7, 6, 5, 4, 3, 10],
+    'Result':     [0, 0, 1, 1, 1, 1, 1, 0]   # 1 = Pass, 0 = Fail
+}
+
+df = pd.DataFrame(data)
+
+# Splitting features and labels
+X = df[['StudyHours', 'SleepHours']]
+y = df['Result']
+
+# Splitting into training (80%) and testing (20%)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# ----------------------------
+# Linear SVM
+# ----------------------------
+svm_linear = SVC(kernel='linear')
+svm_linear.fit(X_train, y_train)
+y_pred_linear = svm_linear.predict(X_test)
+
+result_linear = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred_linear})
+accuracy_linear = accuracy_score(y_test, y_pred_linear)
+
+print("---- Linear SVM ----")
+print("Training Data:\n", X_train)
+print("\nTraining Labels:\n", y_train)
+print("\nTesting Data:\n", X_test)
+print("\nTesting Labels:\n", y_test)
+print("\nResults:\n", result_linear)
+print(f"\nAccuracy (Linear): {accuracy_linear * 100:.2f}%")
+
+# ----------------------------
+# Non-linear SVM (RBF kernel)
+# ----------------------------
+svm_rbf = SVC(kernel='rbf')
+svm_rbf.fit(X_train, y_train)
+y_pred_rbf = svm_rbf.predict(X_test)
+
+result_rbf = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred_rbf})
+accuracy_rbf = accuracy_score(y_test, y_pred_rbf)
+
+print("\n---- Non-linear SVM (RBF) ----")
+print("\nResults:\n", result_rbf)
+print(f"\nAccuracy (RBF): {accuracy_rbf * 100:.2f}%")
+
+
+
+
+Output:
+ 
+---- Linear SVM ----
+Training Data:
+    StudyHours  SleepHours
+0           2           9
+7           3          10
+2           6           7
+4          10           5
+3           8           6
+6          14           3
+
+Training Labels:
+ 0    0
+7    0
+2    1
+4    1
+3    1
+6    1
+Name: Result, dtype: int64
+
+Testing Data:
+    StudyHours  SleepHours
+1           4           8
+5          12           4
+
+Testing Labels:
+ 1    0
+5    1
+Name: Result, dtype: int64
+
+Results:
+    Actual  Predicted
+1       0          1
+5       1          1
+
+Accuracy (Linear): 50.00%
+
+---- Non-linear SVM (RBF) ----
+
+Results:
+    Actual  Predicted
+1       0          0
+5       1          1
+
